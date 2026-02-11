@@ -13,12 +13,27 @@ const FeaturesSection = () => (
       <FeatureCard 
         icon="⏱️" 
         title="Flexible Timing" 
-        desc="Set custom durations from 30 minutes to 12 hours. Perfect for any workflow or focus session." 
+        desc="Set custom durations from 30 minutes to 24 hours. Perfect for any workflow or focus session." 
       />
       <FeatureCard 
         icon="⚡" 
         title="Instant Effect" 
         desc="Blocks take effect immediately. No complicated setup or system restarts required." 
+      />
+      <FeatureCard 
+        icon="🍅" 
+        title="Pomodoro Technique" 
+        desc="Built-in Pomodoro timer with focus up to 24 hours and breaks up to 2 hours. Perfect for any work session length." 
+      />
+      <FeatureCard 
+        icon="🔒" 
+        title="Strict Mode" 
+        desc="Unbreakable focus sessions that can't be canceled. Perfect for when you need maximum commitment." 
+      />
+      <FeatureCard 
+        icon="📊" 
+        title="Usage Analytics" 
+        desc="Track your most blocked sites and monitor your focus patterns to improve productivity over time." 
       />
     </div>
   </section>
