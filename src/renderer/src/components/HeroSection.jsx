@@ -21,7 +21,9 @@ const HeroSection = () => (
       >
         Start Now
       </button>
-      <button className="text-white border border-gray-400 px-6 py-2 rounded-full text-lg">
+      <button
+        onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })} 
+      className="text-white border border-gray-400 px-6 py-2 rounded-full text-lg">
         Learn More
       </button>
     </div>

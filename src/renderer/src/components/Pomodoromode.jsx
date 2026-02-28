@@ -1,125 +1,103 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react'
 
-const PomodoroMode = ({ 
-  isActive, 
-  onBlock,
-  onUnblock,
-  onComplete,
-  blockedSites,
-  isDark 
-}) => {
-  const [focusTime, setFocusTime] = useState(25); // minutes
-  const [breakTime, setBreakTime] = useState(5); // minutes
-  const [cycles, setCycles] = useState(4);
-  const [currentCycle, setCurrentCycle] = useState(1);
-  const [isOnBreak, setIsOnBreak] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(focusTime * 60);
-  const [isPomodoroActive, setIsPomodoroActive] = useState(false);
-  const timerRef = useRef(null);
+const PomodoroMode = ({ isActive, onBlock, onUnblock, onComplete, blockedSites }) => {
+  const [focusTime, setFocusTime]           = useState(25)
+  const [breakTime, setBreakTime]           = useState(5)
+  const [cycles, setCycles]                 = useState(4)
+  const [currentCycle, setCurrentCycle]     = useState(1)
+  const [isOnBreak, setIsOnBreak]           = useState(false)
+  const [timeLeft, setTimeLeft]             = useState(25 * 60)
+  const [isPomodoroActive, setIsPomodoroActive] = useState(false)
+  const timerRef = useRef(null)
 
+  // Start/stop countdown whenever isPomodoroActive or timeLeft changes
   useEffect(() => {
-    if (!isPomodoroActive || timeLeft === null) return;
+    if (!isPomodoroActive || timeLeft === null) return
 
     timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
-          handleCycleComplete();
-          return null;
+          clearInterval(timerRef.current)
+          timerRef.current = null
+          handleCycleComplete()
+          return null
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return prev - 1
+      })
+    }, 1000)
 
     return () => {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    };
-  }, [isPomodoroActive, timeLeft]);
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  }, [isPomodoroActive, isOnBreak]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const notify = (title, body) => {
+    if (typeof Notification !== 'undefined') {
+      new Notification(title, { body })
+    }
+  }
 
   const handleCycleComplete = async () => {
-    clearInterval(timerRef.current);
-    timerRef.current = null;
-
-    if (typeof Notification !== 'undefined') {
-      if (isOnBreak) {
-        new Notification("Break Complete! 🎯", {
-          body: "Time to focus again!",
-        });
-      } else {
-        new Notification("Focus Session Complete! 🎉", {
-          body: "Time for a well-deserved break!",
-        });
-      }
-    }
-
     if (isOnBreak) {
-      // Break ended, start next focus session
+      // Break ended
       if (currentCycle < cycles) {
-        setCurrentCycle(prev => prev + 1);
-        setIsOnBreak(false);
-        setTimeLeft(focusTime * 60);
-        
-        // Re-block sites for next focus session
-        await onBlock();
+        notify('Break Complete! 🎯', 'Time to focus again!')
+        setCurrentCycle((c) => c + 1)
+        setIsOnBreak(false)
+        setTimeLeft(focusTime * 60)
+        await onBlock()
       } else {
-        // All cycles complete
-        handlePomodoroStop();
-        if (typeof Notification !== 'undefined') {
-          new Notification("Pomodoro Session Complete! 🏆", {
-            body: `You completed ${cycles} focus cycles!`,
-          });
-        }
+        // All done
+        notify('Pomodoro Session Complete! 🏆', `You completed ${cycles} focus cycles!`)
+        handlePomodoroStop()
       }
     } else {
-      // Focus ended, start break
-      setIsOnBreak(true);
-      setTimeLeft(breakTime * 60);
-      
-      // Unblock sites during break
-      await onUnblock();
+      // Focus session ended → start break
+      notify('Focus Session Complete! 🎉', 'Time for a well-deserved break!')
+      setIsOnBreak(true)
+      setTimeLeft(breakTime * 60)
+      await onUnblock()
     }
-  };
+  }
 
   const handlePomodoroStart = async () => {
     if (blockedSites.length === 0) {
-      alert("Please add at least one site to block!");
-      return;
+      alert('Please add at least one site to block!')
+      return
     }
-
-    // Start blocking sites
-    await onBlock();
-    
-    setIsPomodoroActive(true);
-    setCurrentCycle(1);
-    setIsOnBreak(false);
-    setTimeLeft(focusTime * 60);
-  };
+    await onBlock()
+    setIsPomodoroActive(true)
+    setCurrentCycle(1)
+    setIsOnBreak(false)
+    setTimeLeft(focusTime * 60)
+  }
 
   const handlePomodoroStop = async () => {
-    clearInterval(timerRef.current);
-    timerRef.current = null;
-    setIsPomodoroActive(false);
-    setTimeLeft(focusTime * 60);
-    setCurrentCycle(1);
-    setIsOnBreak(false);
-    
-    // Stop blocking sites and complete Pomodoro
-    await onComplete();
-  };
+    clearInterval(timerRef.current)
+    timerRef.current = null
+    setIsPomodoroActive(false)
+    setTimeLeft(focusTime * 60)
+    setCurrentCycle(1)
+    setIsOnBreak(false)
+    await onComplete()
+  }
 
   const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+    if (seconds === null || seconds === undefined) return '00:00'
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  }
 
-  const getProgressPercentage = () => {
-    const totalTime = isOnBreak ? breakTime * 60 : focusTime * 60;
-    return ((totalTime - timeLeft) / totalTime) * 100;
-  };
+  const getProgress = () => {
+    if (timeLeft === null) return 100
+    const total = isOnBreak ? breakTime * 60 : focusTime * 60
+    return ((total - timeLeft) / total) * 100
+  }
 
   return (
-    <div className={`${isDark ? 'bg-gray-800' : 'bg-gray-100'} p-8 rounded-xl w-full`}>
+    <div className={`bg-gray-800 p-8 rounded-xl w-full`}>
       <h2 className="text-2xl font-bold mb-6 text-orange-400 flex items-center justify-center gap-2">
         <span className="text-3xl">🍅</span> Pomodoro Mode
       </h2>
@@ -128,14 +106,11 @@ const PomodoroMode = ({
         <div className="space-y-6">
           {/* Focus Time */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            <label className="block text-sm font-medium mb-2 text-gray-300">
               Focus Time (minutes)
             </label>
             <input
-              type="range"
-              min={1}
-              max={60}
-              value={focusTime}
+              type="range" min={1} max={60} value={focusTime}
               onChange={(e) => setFocusTime(parseInt(e.target.value))}
               className="w-full accent-orange-500"
             />
@@ -144,14 +119,11 @@ const PomodoroMode = ({
 
           {/* Break Time */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            <label className="block text-sm font-medium mb-2 text-gray-300">
               Break Time (minutes)
             </label>
             <input
-              type="range"
-              min={1}
-              max={30}
-              value={breakTime}
+              type="range" min={1} max={30} value={breakTime}
               onChange={(e) => setBreakTime(parseInt(e.target.value))}
               className="w-full accent-green-500"
             />
@@ -160,14 +132,11 @@ const PomodoroMode = ({
 
           {/* Cycles */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+            <label className="block text-sm font-medium mb-2 text-gray-300">
               Number of Cycles
             </label>
             <input
-              type="range"
-              min={1}
-              max={10}
-              value={cycles}
+              type="range" min={1} max={10} value={cycles}
               onChange={(e) => setCycles(parseInt(e.target.value))}
               className="w-full accent-purple-500"
             />
@@ -184,32 +153,29 @@ const PomodoroMode = ({
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Current Status */}
           <div className="text-center">
             <div className={`text-sm font-medium mb-2 ${isOnBreak ? 'text-green-400' : 'text-orange-400'}`}>
               {isOnBreak ? '☕ Break Time' : '🎯 Focus Time'}
             </div>
-            <div className="text-5xl font-bold mb-4">
-              {formatTime(timeLeft)}
-            </div>
-            <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            <div className="text-5xl font-bold font-mono mb-4">{formatTime(timeLeft)}</div>
+            <div className={`text-sm text-gray-400`}>
               Cycle {currentCycle} of {cycles}
             </div>
           </div>
 
-          {/* Progress Bar */}
+          {/* Progress bar */}
           <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-1000 ${
-                isOnBreak 
-                  ? 'bg-gradient-to-r from-green-400 to-green-600' 
+                isOnBreak
+                  ? 'bg-gradient-to-r from-green-400 to-green-600'
                   : 'bg-gradient-to-r from-orange-400 to-red-600'
               }`}
-              style={{ width: `${getProgressPercentage()}%` }}
+              style={{ width: `${getProgress()}%` }}
             />
           </div>
 
-          {/* Cycles Indicator */}
+          {/* Cycle dots */}
           <div className="flex justify-center gap-2">
             {[...Array(cycles)].map((_, i) => (
               <div
@@ -234,7 +200,7 @@ const PomodoroMode = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PomodoroMode;
+export default PomodoroMode

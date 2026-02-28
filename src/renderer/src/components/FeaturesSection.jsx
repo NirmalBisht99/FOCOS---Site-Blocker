@@ -23,7 +23,7 @@ const FeaturesSection = () => (
       <FeatureCard 
         icon="🍅" 
         title="Pomodoro Technique" 
-        desc="Built-in Pomodoro timer with focus up to 24 hours and breaks up to 2 hours. Perfect for any work session length." 
+        desc="Built-in Pomodoro timer with customizable focus and break intervals. Stay productive with proven methods." 
       />
       <FeatureCard 
         icon="🔒" 
