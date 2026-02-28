@@ -1,45 +1,150 @@
+# FOCOS (Desktop Site-Blocker & Focus App)
 
-# electron-app
+An Electron-based cross-platform productivity application built with **React** and **Tailwind CSS**.
 
-An Electron application with React
+FOCOS helps users maintain deep focus by blocking distracting websites during structured focus sessions. The application enforces time-based blocking, persists session state locally, and provides a clean, distraction-free experience.
 
-## Recommended IDE Setup
+FOCOS operates in **three powerful modes**:
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+- 🟢 Normal Mode  
+- 🍅 Pomodoro Mode (Customizable)  
+- 🔒 Strict Mode  
 
-## Project Setup
+Core blocking logic and system-level controls operate inside the Electron desktop environment.
 
-### Install
+---
 
-```bash
-$ npm install
-```
+# 🚀 Tech Stack
 
-### Development
+- **Electron** — Desktop application framework  
+- **React** — Frontend UI  
+- **Tailwind CSS** — Styling & responsive design  
+- **Node.js** — Backend logic & system operations  
 
-```bash
-$ npm run dev
-```
+---
 
-### Build
+# 🎯 Three Focus Modes
 
-```bash
-# For windows
-$ npm run build:win
+## 🟢 1. Normal Mode
 
-# For macOS
-$ npm run build:mac
+Standard website blocking mode for flexible focus sessions.
 
-# For Linux
-$ npm run build:linux
-```
-=======
-# FOCOS(Desktop Site-Blocker)
+### Features:
+- User-defined focus duration  
+- Custom blocked website list  
+- Session timer countdown  
+- Daily blocking persistence  
+- Completion notification  
 
-FOCOS – Desktop Site Blocker & Focus App
+Best for users who want simple time-based blocking without enforced restrictions.
 
-FOCOS is a cross-platform desktop productivity application built using Electron, React, and Tailwind CSS that helps users maintain focus by blocking distracting websites for predefined time intervals. The application enforces time-based focus sessions, persists daily blocking state locally, and delivers completion feedback through in-app notifications and messages. A responsive, user-centric interface enables users to configure blocked sites, monitor session progress, and review focus outcomes. To demonstrate product flow and UX, a live web-based UI simulation is deployed, while core blocking logic and system controls operate within the Electron desktop environment.
+---
 
-Tech Stack: Electron, React, Tailwind CSS, Node.js
-Demo: Live UI simulation (web) + full desktop implementation (Electron)
->>>>>>> 9db459718d5d3aad19ef6ee5d77f4d4ffe95a583
+## 🍅 2. Pomodoro Mode (Customizable)
+
+Structured productivity mode based on the Pomodoro technique — fully customizable to match user preference.
+
+### Features:
+- Custom focus duration (e.g., 25, 40, 50 minutes)  
+- Custom short break duration  
+- Custom long break duration  
+- Configurable number of cycles before long break  
+- Automatic session switching (Focus → Break → Focus)  
+- Session counter & progress tracking  
+- Real-time countdown timers  
+
+Ideal for users who prefer disciplined work-break cycles but want flexibility in timing.
+
+---
+
+## 🔒 3. Strict Mode
+
+High-discipline mode for maximum focus enforcement.
+
+### Features:
+- Prevents closing or minimizing the application  
+- Blocks task switching during active session  
+- Disables bypass of blocked websites  
+- Cannot stop session before timer completion  
+- Enforces full-screen focus environment  
+
+Designed for deep work and zero-distraction environments.
+
+---
+
+# ✨ Core Capabilities
+
+- 🌐 Website blocking during active sessions  
+- ⏳ Real-time customizable timers  
+- 💾 Local persistence of session data  
+- 🔔 Completion alerts and feedback  
+- 📊 Focus session tracking  
+- 🖥 Cross-platform desktop support  
+
+---
+
+# 🧠 Application Workflow
+
+1. User selects one of the three modes  
+2. Configures session duration (Normal/Pomodoro)  
+3. Starts focus session  
+4. App activates blocking engine  
+5. Timer runs until completion  
+6. Session ends → notification displayed  
+
+In **Strict Mode**, user cannot exit until the timer finishes.
+
+---
+
+# 🛠 Recommended IDE Setup
+
+- VSCode  
+- ESLint  
+- Prettier  
+
+---
+
+# 📦 Project Setup
+
+## Install Dependencies
+
+npm install
+
+Development Mode
+
+npm run dev
+
+Build Application
+
+Windows
+
+npm run build:win
+
+macOS
+
+npm run build:mac
+
+Linux
+
+npm run build:linux
+# 📁 Project Structure (Simplified)
+
+
+FOCOS/
+- │
+- ├── main/            # Electron main process
+- ├── preload/         # Secure IPC bridge
+- ├── renderer/        # React frontend
+- │   ├── components/
+- │   ├── pages/
+- │   └── hooks/
+- ├── assets/
+- └── package.json
+# 👨‍💻 Developed By
+
+Nirmal Bisht
+
+
+
+
+
