@@ -17,148 +17,137 @@ Core blocking logic and system-level controls operate inside the Electron deskto
 # 🚀 Tech Stack
 
 ## ⚛️ React
-
-React is used to build the interactive user interface of FOCOS.
-
-**Why React?**
-- Component-based architecture for reusable UI
-- Efficient state management using hooks
-- Fast rendering with virtual DOM
-- Clean separation between UI and logic
-
-**Used For:**
-- Mode selection screens  
-- Timer components  
-- Blocked website configuration UI  
-- Session tracking dashboards  
-- Dynamic state updates during focus sessions  
-
----
+Used to build the interactive UI.
+- Component-based architecture  
+- State management using hooks  
+- Dynamic timer updates  
+- Mode switching UI  
 
 ## 🎨 Tailwind CSS
-
-Tailwind CSS is used for modern and responsive styling.
-
-**Why Tailwind?**
-- Utility-first styling approach  
-- Rapid UI development  
-- Fully responsive layouts  
-- Clean and minimal design system  
-
-**Used For:**
-- Focus timer UI  
-- Mode selection cards  
-- Strict mode full-screen layout  
+Used for responsive and modern styling.
+- Utility-first design  
+- Clean layout structure  
+- Full-screen strict mode styling  
 - Responsive desktop interface  
 
----
-
 ## 🖥 Electron
-
-Electron powers the desktop environment of FOCOS.
-
-**Why Electron?**
-- Cross-platform desktop support (Windows, macOS, Linux)  
-- Access to system-level controls  
-- Ability to enforce website blocking  
-- IPC communication between frontend and backend  
-
-**Used For:**
-- Main process handling system-level operations  
-- Blocking websites during sessions  
-- Enforcing Strict Mode restrictions  
-- Desktop window management  
-
----
+Used to convert the React app into a cross-platform desktop application.
+- Access to system-level operations  
+- File system manipulation  
+- IPC (Inter-Process Communication)  
+- Desktop window control  
 
 ## 💾 Local Storage
-
-Local Storage is used to persist user data locally.
-
-**Why Local Storage?**
-- No external database required  
-- Fast local read/write operations  
-- Session persistence across app restarts  
-
-**Stores:**
-- Blocked website list  
-- Selected focus mode  
-- Timer preferences (Pomodoro customization)  
-- Daily focus tracking data  
+Used to persist data locally.
+- Blocked websites list  
+- Timer preferences  
+- Selected mode  
 - Session history  
+- Daily tracking data  
+
+---
+
+# 🔒 How Website Blocking Works
+
+FOCOS blocks websites by **configuring the system's host file**.
+
+When a focus session starts, the app modifies the OS host file to redirect selected domains to `127.0.0.1`, preventing access.
+
+---
+
+## 🧩 Blocking Mechanism (Technical Flow)
+
+| Step | What Happens | How It’s Done |
+|------|--------------|--------------|
+| 1️⃣ | User selects websites to block | Stored in Local Storage |
+| 2️⃣ | Focus session starts | Renderer sends request via IPC |
+| 3️⃣ | Electron main process receives request | Uses Node.js file system access |
+| 4️⃣ | Host file is modified | Domains mapped to `127.0.0.1` |
+| 5️⃣ | Browser tries to open blocked site | Redirected to localhost (fails) |
+| 6️⃣ | Session ends | Host file entries removed |
+| 7️⃣ | Websites restored | System returns to normal |
+
+---
+
+## 🖥 Host File Configuration Example
+
+During blocking, entries like this are added:
+
+
+127.0.0.1 facebook.com
+127.0.0.1 www.facebook.com
+
+127.0.0.1 instagram.com
+127.0.0.1 www.instagram.com
+
+
+This prevents the browser from reaching the real server.
+
+When the session ends, FOCOS removes these entries automatically.
+
+---
+
+## ⚠️ Why Admin Permission Is Required
+
+Modifying the host file requires:
+
+- Windows → Administrator privileges  
+- macOS/Linux → Root access  
+
+Electron handles permission elevation to safely update the file.
 
 ---
 
 # 🎯 Three Focus Modes
 
 ## 🟢 1. Normal Mode
-
-Standard website blocking mode for flexible focus sessions.
-
-### Features:
-- User-defined focus duration  
-- Custom blocked website list  
-- Session timer countdown  
-- Daily blocking persistence  
-- Completion notification  
-
-Best for users who want simple time-based blocking without enforced restrictions.
+- Custom focus duration  
+- Website blocking active  
+- Timer countdown  
+- Notifications after completion  
 
 ---
 
 ## 🍅 2. Pomodoro Mode (Customizable)
-
-Structured productivity mode based on the Pomodoro technique — fully customizable.
-
-### Features:
-- Custom focus duration (e.g., 25, 40, 50 minutes)  
-- Custom short break duration  
-- Custom long break duration  
-- Configurable number of cycles before long break  
-- Automatic session switching (Focus → Break → Focus)  
-- Session counter & progress tracking  
-- Real-time countdown timers  
-
-Ideal for users who prefer disciplined work-break cycles with flexibility.
+- Custom focus duration  
+- Custom short & long breaks  
+- Configurable cycle count  
+- Automatic switching between focus & break  
+- Session counter  
 
 ---
 
 ## 🔒 3. Strict Mode
-
-High-discipline mode for maximum focus enforcement.
-
-### Features:
-- Prevents closing or minimizing the application  
-- Blocks task switching during active session  
-- Disables bypass of blocked websites  
-- Cannot stop session before timer completion  
-- Enforces full-screen focus environment  
-
-Designed for deep work and zero-distraction environments.
+- Prevents app closing  
+- Blocks minimizing  
+- Disables early session termination  
+- Full-screen enforced mode  
+- Host file cannot be reverted until timer ends  
 
 ---
 
 # ✨ Core Capabilities
 
-- 🌐 Website blocking during active sessions  
+- 🌐 Host-file based website blocking  
 - ⏳ Real-time customizable timers  
 - 💾 Local data persistence  
-- 🔔 Completion alerts and feedback  
-- 📊 Focus session tracking  
+- 🔔 Session completion alerts  
+- 📊 Focus tracking  
 - 🖥 Cross-platform desktop support  
 
 ---
 
 # 🧠 Application Workflow
 
-1. User selects one of the three modes  
-2. Configures session duration (Normal/Pomodoro)  
+1. User selects mode  
+2. Configures session duration  
 3. Starts focus session  
-4. Electron activates blocking engine  
-5. Timer runs until completion  
-6. Session ends → notification displayed  
+4. Electron modifies host file  
+5. Timer runs  
+6. Session completes  
+7. Host file restored  
 
-In **Strict Mode**, user cannot exit until the timer finishes.
+In **Strict Mode**, the host file remains locked until the timer finishes.
 
 ---
 
@@ -206,16 +195,16 @@ npm run build:linux
 # 📁 Project Structure (Simplified)
 
 
-- FOCOS/
-- │
-- ├── main/ # Electron main process
-- ├── preload/ # Secure IPC bridge
-- ├── renderer/ # React frontend
-- │ ├── components/
-- │ ├── pages/
-- │ └── hooks/
-- ├── assets/
-- └── package.json
+FOCOS/
+│
+├── main/ # Electron main process (host file modification logic)
+├── preload/ # Secure IPC bridge
+├── renderer/ # React frontend
+│ ├── components/
+│ ├── pages/
+│ └── hooks/
+├── assets/
+└── package.json
 
 
 ---
