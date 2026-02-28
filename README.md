@@ -192,7 +192,18 @@ npm run build:linux
 
 ---
 
-# 📁 Project Structure (Simplified) FOCOS/ - │ - ├── main/ # Electron main process - ├── preload/ # Secure IPC bridge - ├── renderer/ # React frontend - │ ├── components/ - │ ├── pages/ - │ └── hooks/ - ├── assets/ - └── package.json
+# 📁 Project Structure (Simplified) 
+
+FOCOS/ 
+- │
+- ├── main/ # Electron main process
+- ├── preload/ # Secure IPC bridge
+- ├── renderer/ # React frontend
+- │ ├── components/
+- │ ├── pages/
+- │ └── hooks/
+- ├── assets/
+- └── package.json
 ---
 
 # 👨‍💻 Developed By
