@@ -191,21 +191,41 @@ npm run build:linux
 
 
 ---
-
-# 📁 Project Structure (Simplified)
-
+## 📁 Project Structure (Simplified)
 
 FOCOS/
 │
-├── main/ # Electron main process (host file modification logic)
-├── preload/ # Secure IPC bridge
-├── renderer/ # React frontend
-│ ├── components/
-│ ├── pages/
-│ └── hooks/
-├── assets/
-└── package.json
-
+├── main/                     # Electron Main Process (Host file modification logic)
+│   ├── index.js
+│   └── blocker.js
+│
+├── preload/                  # Secure IPC Bridge between Main & Renderer
+│   └── preload.js
+│
+├── renderer/                 # React Frontend (Vite)
+│   ├── components/
+│   │   ├── Navigation.jsx
+│   │   ├── HeroSection.jsx
+│   │   ├── ControlCenter.jsx
+│   │   ├── PomodoroMode.jsx
+│   │   ├── StrictMode.jsx
+│   │   └── FeaturesSection.jsx
+│   │
+│   ├── pages/
+│   │   └── Home.jsx
+│   │
+│   ├── hooks/
+│   │   └── useTimer.js
+│   │
+│   └── App.jsx
+│
+├── assets/                   # Images, icons, illustrations
+│
+├── dist/                     # Production build output
+│
+├── electron-builder.json     # Build configuration
+├── package.json
+└── README.md
 
 ---
 
